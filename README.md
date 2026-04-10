@@ -1,8 +1,8 @@
 # lalaland - Quantified Self Project
 
-Thomas Schuff
-Professor MacIsaac
-CPSC 222 - Data Science
+Thomas Schuff  
+Professor MacIsaac  
+CPSC 222 - Data Science  
 
 ## Project Instructions
 
