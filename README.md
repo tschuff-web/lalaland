@@ -1,41 +1,62 @@
-# lalaland - Quantified Self Project
+# _La La Land_ - Using My Apple Music Data to Predict My Listening Eras
 
 Thomas Schuff  
 Professor MacIsaac  
 CPSC 222 - Data Science  
+5/6/26
 
-## Project Instructions
+---
 
-Your Notebook should have, at a minimum, the following sections (in the order given below):
+## Project Description
 
-1. Introduction: Briefly describe the project domain, the dataset, your hypotheses, and the classification task you implemented. More specifically:
-    a. Why is the domain important to you and why you are researching in this domain
-    2. What is the dataset format (e.g. CSV files, JSON files, a mix of the two, etc.)
-    3. What tables (emphasis on the plural here) are included in the dataset
-        1. How is the data in each table collected
-        2. How many instances are there in each table
-    4. Include a brief description of the attributes
-    5. What are you trying to classify in the dataset
-    6. What are potential impacts of the results
-    7. Who are stakeholders interested in your results
-2. Data Preparation: Provide details about the dataset and data preparation. More specifically:
-    1. What cleaning of the dataset did you need to perform (e.g.. are there missing values and how did you handle the missing values)
-    2. How are you merging the tables
-    3. What are the challenges you experienced with data preparation
-3. Exploratory Data Analysis: Provide details about data visualization and statistical analysis. More specifically:
-    1. What data aggregation techniques are you applying (and why)
-    2. What summary statistics you are using (and why)
-    3. What visualizations informatively present the attributes and relationships
-    4. What statistical hypothesis tests are you computing
-        1. Make sure you set your null and alternative hypotheses up correctly. Please come see me if you have questions about how to do this
-4. Classification Results: Describe the classification approach you developed and its performance. More specifically:
-    1. What attribute are you using as class information (i.e., what attribute or attributes are you predicting)
-        1. What is the distribution of the class labels? (e.g. 50% yes, 50% no; or 70% weekday, 30% weekend, etc.)
-    2. What are your hypotheses about the predictions
-    3. How are you evaluating the performance of your kNN and decision tree classifier? How do their results compare?
-    4. What are the challenges you experienced with classification
-5. Conclusion: Provide a brief conclusion of your project, including:
-    1. The classification approach you developed, your classifiers’ performance, and any ideas you have on ways to improve performance.
-    2. Describe the potential impacts of your work (including ethical impacts) for the stakeholders you described in the introduction.
-    3. Be sure to include sources for your dataset, tutorials followed, Github repos used as references, AI tools used, etc.
-        1. Note: code you submit for your project should be your original code!!
+The main idea of this project is to divide my listening history into different
+_eras_, or distinct periods where my taste, mood, or habits were similar, before
+changing or shifting.
+
+These "eras" could be defined by several factors including:
+
+- average song BPM?
+- song duration
+- release year / nostalgia
+- genre
+- genre diversity
+- artist diversity
+- artist concentration
+- skip rate
+- listening duration
+- time-of-day listening
+- mood categories?
+
+Then, I will train a classifeier to predict which era a given time period (day,
+week, month, etc.) belongs to, based on my listening activity during that
+period.
+
+The class label (what I will predict) will be the era label (Indie Era, Study
+Era, etc.)
+
+The two tables I will join are:
+
+1. My Apple Music Listening History
+2. Song Metadata
+
+And these tables will be joined by the song/album ID
+
+For my exploratory data analysis, I could include several visuals including:
+
+- Rolling BPM trendline
+- Genre proportions over time
+- Artist dominance/preference cycles
+- Heatmap of listening by hour of day
+- Skip rate by hour of day
+- Cluster visualization of daily listening profiles
+- Era-by-Era comparison plots
+
+For my hypothesis tests, these are some ideas:
+
+- Average BPM differs between eras
+- Genre proportions differ between era
+- Skip rate changes across eras
+
+For my classification models, I could use a _kNN_ model for my numeric
+attributes like BPM, skip rate, listening duration, etc. but a _Decision Tree_
+model would be better for my categorical data like genre, artists, etc.
