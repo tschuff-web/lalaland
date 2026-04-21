@@ -1,62 +1,81 @@
-# _La La Land_ - Using My Apple Music Data to Predict My Listening Eras
+# _La La Land_ - Analyzing my Apple Music Listenign Behavior
 
-Thomas Schuff  
-Professor MacIsaac  
-CPSC 222 - Data Science  
-5/6/26
+## Quantified Self Project - CPSC 222 (Spring 2026)
+
+### Thomas Schuff
 
 ---
 
-## Project Description
+## Overview
 
-The main idea of this project is to divide my listening history into different
-_eras_, or distinct periods where my taste, mood, or habits were similar, before
-changing or shifting.
+LaLaLand is a Quantified Self project that analyzes my daily Apple Music
+listening history over a 10‑month period. The goal is to understand how my
+listening behavior changes across time, test hypotheses about weekday/weekend
+and monthly differences, and build a classifier that predicts whether a given
+day is a weekday or weekend based solely on listening patterns.
 
-These "eras" could be defined by several factors including:
+This project includes the following:
 
-- average song BPM?
-- song duration
-- release year / nostalgia
-- genre
-- genre diversity
-- artist diversity
-- artist concentration
-- skip rate
-- listening duration
-- time-of-day listening
-- mood categories?
+- Data cleaning and preprocessing
+- Merging multiple tables
+- Exploratory data analysis (EDA)
+- Statistical hypothesis testing
+- Machine learning classification (kNN)
 
-Then, I will train a classifeier to predict which era a given time period (day,
-week, month, etc.) belongs to, based on my listening activity during that
-period.
+---
 
-The class label (what I will predict) will be the era label (Indie Era, Study
-Era, etc.)
+### Key Components
 
-The two tables I will join are:
+- **LaLaLand_Notebook.ipynb**  
+  The main narrative report containing the introduction, data preparation, EDA,
+  hypothesis testing, and classification results. Code cells are interleaved and
+  mostly call functions from the `new_utils.py` file.
 
-1. My Apple Music Listening History
-2. Song Metadata
+- **new_utils.py**  
+  A utility module containing all the data loading, cleaning, aggregation,
+  visualization, hypothesis testing, and classification functions.
 
-And these tables will be joined by the song/album ID
+- **dataset files/**  
+  Contains the Apple Music export, the weekday/weekend table, and a list of
+  columns to remove during cleaning.
 
-For my exploratory data analysis, I could include several visuals including:
+---
 
-- Rolling BPM trendline
-- Genre proportions over time
-- Artist dominance/preference cycles
-- Heatmap of listening by hour of day
-- Skip rate by hour of day
-- Cluster visualization of daily listening profiles
-- Era-by-Era comparison plots
+## How to Run the Project
 
-For my hypothesis tests, these are some ideas:
+### Dependencies
 
-- Average BPM differs between eras
-- Genre proportions differ between era
-- Skip rate changes across eras
+This project uses Python 3.10+ and the following libraries:
 
-For my classification models, I could use a _kNN_ model for my numeric
-attributes like BPM, skip rate, listening duration, etc. but a _Decision Tree_
-model would be better for my categorical data like genre, artists, etc.
+- pandas
+- numpy
+- matplotlib
+- scipy
+- scikit‑learn
+
+Importantly, set your working directory to: %cd /path/to/quantified-self-project
+
+Then, within the `lalaland.ipynb` Jupyter Notebook, execute the Notebook cells
+in order with `Run All`. The notebook will:
+
+1. Load the Apple Music dataset
+2. Clean and preprocess the data
+3. Merge with the weekday table
+4. Perform EDA and hypothesis testing
+5. Train and evaluate the kNN classifier
+
+### Data Sources
+
+1. Apple Music Play Activity - Exported from Apple’s privacy portal
+   ([https://privacy.apple.com](https://privacy.apple.com)).
+   - Contains timestamped events for every play, pause, and resume action.
+2. Weekday Table
+   - Generated manually based on calendar dates. No third‑party datasets were
+     used.
+
+### Notes on Ethics and Privacy
+
+- This project uses personal listening data.
+- All analysis is performed locally, and no data is shared or uploaded
+  externally.
+- The project demonstrates responsible handling of personal digital traces.

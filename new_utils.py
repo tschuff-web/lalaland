@@ -15,12 +15,13 @@ Utility functions for analyzing my daily Apple Music listening history.
 import pandas as pd
 import numpy as np
 import csv
+import matplotlib as mpl
 import scipy.stats as stats
 from sklearn.model_selection import train_test_split
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import accuracy_score
-import matplotlib as mpl
+from sklearn.metrics import confusion_matrix, classification_report
 import json
 
 
@@ -224,3 +225,28 @@ def convert_label(value):
         return "Weekday"
     else:
         return "Weekend"
+
+
+def clf_report(y_test, y_pred, acc):
+    print("kNN Classification Results")
+    print(f"Accuracy: {acc:.4f}\n")
+
+    # Confusion Matrix
+    cm = confusion_matrix(y_test, y_pred)
+    print("Confusion Matrix:")
+    print(cm, "\n")
+
+    # Classification Report
+    print("Classification Report:")
+    print(classification_report(y_test, y_pred, target_names=["Weekday", "Weekend"]))
+
+    # Show first few predictions
+    results_df = pd.DataFrame(
+        {
+            "Actual": [convert_label(act_val) for act_val in y_test],
+            "Predicted": [convert_label(pred_val) for pred_val in y_pred],
+        }
+    )
+
+    print("\nSample Predictions:")
+    print(results_df.head(50))
