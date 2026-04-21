@@ -26,7 +26,7 @@ This project includes the following:
 
 ### Key Components
 
-- **LaLaLand_Notebook.ipynb**  
+- **lalaland.ipynb**  
   The main narrative report containing the introduction, data preparation, EDA,
   hypothesis testing, and classification results. Code cells are interleaved and
   mostly call functions from the `new_utils.py` file.
