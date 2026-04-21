@@ -25,7 +25,9 @@ CLIENT_SECRET = "d4090a65cb5044af8b09e1f1e82bf8b4"
 
 
 # --- FUNCTIONS ---
-def load_metadata_cache():
+
+
+def load_metadata_cache():  # remove?
     """
     Open and copy the song metadata cache into a dictionary (to reduce redundant Spotify API requests)
     """
@@ -34,7 +36,7 @@ def load_metadata_cache():
     return metadata_cache
 
 
-def load_library_tracks():
+def load_library_tracks():  # remove?
     """
     Open and copy the song information from my saved library to a DataFrame to reduce the number of API calls necessary to get song info
     """
@@ -50,7 +52,7 @@ def load_library_tracks():
     return library_df
 
 
-def get_spotify_token():
+def get_spotify_token():  # remove?
     """
     Get the access token for the Spotify Web API using my Client ID and Client Secret.
     """
@@ -76,7 +78,7 @@ def load_data(filename):
     return df
 
 
-def clean_data(activity_df):
+def clean_data(activity_df):  # EDIT!!
     """
     Takes the raw data from the .csv file and cleans it
     """
