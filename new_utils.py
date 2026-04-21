@@ -30,7 +30,7 @@ def load_activity_data(filename):
     """
     Load a CSV file into a Pandas DataFrame.
     """
-    return pd.read_csv(filename)
+    return pd.read_csv(filename)  # type: ignore
 
 
 def load_weekday_table(filename):
@@ -78,7 +78,7 @@ def clean_activity_data(df):
     df["Date"] = df["Event Timestamp"].dt.date
 
     # Collapse duplicate song events (Apple records event every time you pause, play, etc. so lots of duplicates)
-    df = df.groupby(["Song Name", "Date"], group_keys=False).apply(calc_song_session)
+    df = df.groupby(["Song Name", "Date"], group_keys=False).apply(calc_song_session)  # type: ignore
 
     # Keep only the first event of each session
     df = df[df["New Session"]]
