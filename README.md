@@ -9,10 +9,10 @@
 ## Overview
 
 LaLaLand is a Quantified Self project that analyzes my daily Apple Music
-listening history over a 10‑month period. The goal is to understand how my
+listening history over the last year(ish). The goal is to understand how my
 listening behavior changes across time, test hypotheses about weekday/weekend
-and monthly differences, and build a classifier that predicts whether a given
-day is a weekday or weekend based solely on listening patterns.
+and monthly differences, and build classifiers that predict whether a given day
+is a weekday or weekend solely on listening patterns.
 
 This project includes the following:
 
@@ -33,7 +33,8 @@ This project includes the following:
 
 - **new_utils.py**  
   A utility module containing all the data loading, cleaning, aggregation,
-  visualization, hypothesis testing, and classification functions.
+  visualization, hypothesis testing, and classification functions (kNN and
+  Decision Tree).
 
 - **dataset files/**  
   Contains the Apple Music export, the weekday/weekend table, and a list of
@@ -53,10 +54,11 @@ This project uses Python 3.10+ and the following libraries:
 - scipy
 - scikit‑learn
 
-Importantly, set your working directory to: %cd /path/to/quantified-self-project
+Importantly, remember to set your working directory to: %cd
+/path/to/quantified-self-project
 
 Then, within the `lalaland.ipynb` Jupyter Notebook, execute the Notebook cells
-in order with `Run All`. The notebook will:
+in order with `Run All`. The notebook will then:
 
 1. Load the Apple Music dataset
 2. Clean and preprocess the data

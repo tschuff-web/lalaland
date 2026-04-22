@@ -15,14 +15,18 @@ Utility functions for analyzing my daily Apple Music listening history.
 import pandas as pd
 import numpy as np
 import csv
-import matplotlib as mpl
+import matplotlib.pyplot as plt
 import scipy.stats as stats
 from sklearn.model_selection import train_test_split
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import accuracy_score
-from sklearn.metrics import confusion_matrix, classification_report
-import json
+from sklearn.metrics import (
+    confusion_matrix,
+    classification_report,
+    ConfusionMatrixDisplay,
+)
+from sklearn.tree import DecisionTreeClassifier, plot_tree
 
 
 # --- DATA LOADING ---
@@ -30,13 +34,15 @@ def load_activity_data(filename):
     """
     Load a CSV file into a Pandas DataFrame.
     """
-    return pd.read_csv(filename)  # type: ignore
+
+    return pd.read_csv(filename, low_memory=False)
 
 
 def load_weekday_table(filename):
     """
     Load a table mapping dates to weekday/weekend labels
     """
+
     return pd.read_csv(filename)
 
 
@@ -78,7 +84,7 @@ def clean_activity_data(df):
     df["Date"] = df["Event Timestamp"].dt.date
 
     # Collapse duplicate song events (Apple records event every time you pause, play, etc. so lots of duplicates)
-    df = df.groupby(["Song Name", "Date"], group_keys=False).apply(calc_song_session)  # type: ignore
+    df = df.groupby(["Song Name", "Date"], group_keys=False).apply(calc_song_session)
 
     # Keep only the first event of each session
     df = df[df["New Session"]]
@@ -94,6 +100,7 @@ def calc_song_session(group):
         - Calculates a time difference between consecutive events
         - Marks it as a new session if the difference is greater than 5 minutes
     """
+
     group = group.sort_values("Event Timestamp")
     group["Time Difference"] = group["Event Timestamp"].diff()
 
@@ -110,6 +117,7 @@ def calc_daily_counts(df):
     Calculate the number of unique listening sessions per day
     Each "session" represents one "listen" of a song
     """
+
     daily_counts = df.groupby("Date").size().reset_index(name="Listen Count")
     return daily_counts
 
@@ -133,6 +141,7 @@ def add_rolling_average(df, window=7):
     """
     Add a rolling average of daily listening counts.
     """
+
     df = df.sort_values("Date")
     df["Rolling Average"] = df["Listen Count"].rolling(window=window).mean()
     return df
@@ -142,6 +151,7 @@ def add_month(df):
     """
     Add a month column for analyzing seasonal trends.
     """
+
     df["Date"] = pd.to_datetime(df["Date"])
     df["Month"] = df["Date"].dt.month
     return df
@@ -149,10 +159,76 @@ def add_month(df):
 
 def add_weekend_flag(df):
     """
-    Add True/False weekend indicator for the classification.
+    Add True/False weekend indicator (as an integer 0/1) for the classification.
     """
+
     df["Is Weekend"] = df["Day of Week"].isin(["Saturday", "Sunday"]).astype(int)
     return df
+
+
+# --- DATA VISUALIZATION ---
+def plot_daily_counts(df):
+    """
+    Plot the daily listening counts
+    """
+    plt.figure(figsize=(12, 5))
+    plt.plot(df["Date"], df["Listen Count"])
+    plt.title("Daily Listening Sessions Over Time")
+    plt.xlabel("Date")
+    plt.ylabel("Listen Count")
+    plt.xticks(rotation=45)
+    plt.show()
+
+
+def boxplot_wkday_wkend(df):
+    """
+    Generate a boxplot comparing the distributions of weekday and weekend listening counts.
+    """
+
+    weekday = df[df["Is Weekend"] == 0]["Listen Count"]
+    weekend = df[df["Is Weekend"] == 1]["Listen Count"]
+    plt.figure(figsize=(6, 5))
+    plt.boxplot([weekday, weekend], label=["Weekday", "Weekend"])
+    plt.title("Weekday vs Weekend Listening")
+    plt.xlabel("Day Type")
+    plt.ylabel("Listen Count")
+    plt.show()
+
+
+def monthly_trend(df):
+    """
+    Generate a bar plot comparing the average listening counts for each month
+    """
+
+    monthly_avg = df.groupby("Month")["Listen Count"].mean()
+    plt.figure(figsize=(8, 5))
+    plt.bar(monthly_avg.index, monthly_avg.values)
+    plt.title("Average Listening Count by Month")
+    plt.xlabel("Month")
+    plt.ylabel("Mean Listen Count")
+    plt.xticks(monthly_avg.index)
+    plt.show()
+
+
+def rolling_average_trend(df):
+    """
+    Generate a line plot with the rolling average on top of the daily listening counts
+    """
+
+    plt.figure(figsize=(12, 5))
+    plt.plot(df["Date"], df["Listen Count"], alpha=0.4, label="Daily Count")
+    plt.plot(
+        df["Date"],
+        df["Rolling Average"],
+        color="red",
+        label="7-Day Rolling Avg",
+    )
+    plt.title("Daily Listening Sessions with 7-Day Rolling Average")
+    plt.xlabel("Date")
+    plt.ylabel("Listen Count")
+    plt.legend()
+    plt.xticks(rotation=45)
+    plt.show()
 
 
 # --- HYPOTHESIS TESTING ---
@@ -161,6 +237,7 @@ def t_test_weekday_vs_weekend(df):
     Two-sample t-test comparing weekday vs. weekend listening counts
     Returns the t-statistic and p-value
     """
+
     weekday = df[
         df["Day of Week"].isin(["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"])
     ]["Listen Count"]
@@ -180,11 +257,12 @@ def anova_monthly(df):
     return stats.f_oneway(*groups)
 
 
-# --- CLASSIFICATION (kNN) ---
+# --- CLASSIFICATION (kNN and Decision Tree) ---
 def prep_classification(df, feature_cols, class_col):
     """
     Prepare X and y for kNN and Decision Tree classification.
     """
+
     X = df[feature_cols]
     y = df[class_col]
     return X, y
@@ -217,21 +295,69 @@ def train_knn_classifier(X, y, k=5, test_size=0.2, random_state=42):
     return knn, X_test, y_test, y_pred, acc
 
 
+def train_decision_tree(X, y, max_depth=5, test_size=0.22, random_state=42):
+    """
+    Train a Decision Tree classifier to predict weekday vs. weekend.
+    Returns the model, X_test, y_test, y_pred, and accuracy.
+    Uses the same train, test, split parameters as the kNN so comparisons can be made between the two.
+    """
+
+    # Train, test, split
+    X_train, X_test, y_train, y_test = train_test_split(
+        X, y, test_size=test_size, random_state=random_state
+    )
+
+    scaler = StandardScaler()
+    X_train_scaled = scaler.fit_transform(X_train)
+    X_test_scaled = scaler.transform(X_test)
+
+    # Train Decision Tree
+    tree_clf = DecisionTreeClassifier(max_depth=max_depth, random_state=random_state)
+    tree_clf.fit(X_train_scaled, y_train)
+
+    # Predict and accuracy
+    y_pred = tree_clf.predict(X_test_scaled)
+    acc = accuracy_score(y_test, y_pred)
+
+    return tree_clf, X_test, y_test, y_pred, acc
+
+
+def plot_decision_tree(tree_clf, feature_cols):
+    """
+    Visualize the trained Decision Tree using MatPlotLib
+    Shows the feature splits, entropy, and class predictions at each node.
+    """
+    fig, ax = plt.subplots(layout="constrained", figsize=(14, 6))
+    plot_tree(
+        tree_clf,
+        feature_names=feature_cols,
+        class_names=["Weekday", "Weekend"],
+        filled=True,
+        rounded=True,
+        ax=ax,
+    )
+    ax.set_title(
+        "Decision Tree: Predicting Weekday vs. Weekend from Listening Behavior"
+    )
+    plt.show()
+
+
 def convert_label(value):
     """
     Converts the "Is Weekend" values from 0/1 to "Weekday" or "Weekend"
     """
+
     if value == 0:
         return "Weekday"
     else:
         return "Weekend"
 
 
-def clf_report(y_test, y_pred, acc):
-    print("kNN Classification Results")
+def clf_report(model_name, y_test, y_pred, acc, title="Classification Results"):
+    print(f"{title}")
     print(f"Accuracy: {acc:.4f}\n")
 
-    # Confusion Matrix
+    # Confusion Matrix (text display)
     cm = confusion_matrix(y_test, y_pred)
     print("Confusion Matrix:")
     print(cm, "\n")
@@ -239,6 +365,15 @@ def clf_report(y_test, y_pred, acc):
     # Classification Report
     print("Classification Report:")
     print(classification_report(y_test, y_pred, target_names=["Weekday", "Weekend"]))
+
+    # Confusion Matrix (visual display)
+    disp = ConfusionMatrixDisplay(
+        confusion_matrix=cm, display_labels=["Weekday", "Weekend"]
+    )
+    fig, ax = plt.subplots(layout="constrained", figsize=(5, 4))
+    disp.plot(ax=ax, colorbar=True)
+    ax.set_title(f"{title} - Confusion Matrix")
+    plt.show()
 
     # Show first few predictions
     results_df = pd.DataFrame(
