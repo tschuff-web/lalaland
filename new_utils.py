@@ -4,11 +4,16 @@ Professor MacIsaac
 CPSC 222 - Data Science
 Quantified Self Project - "LaLaLand"
 
-Utility functions for analyzing my daily Apple Music listening history.
-    - Loading data
-    - Cleaning timestamps
-    - Collapsing duplicate song events into "listening sessions"
-    - Computing daily listening counts
+Utility functions for analyzing my daily Apple Music listening history. This file contains all the project logic code and is called from lalaland.ipynb.
+Functions have been organized into the following sections:
+    - Data Loading --> Load "apple_music_play_activity.csv" and "weekday_table.csv"
+    - Data Cleaning --> Remove irrelevant columns, standardize timestamps, and collapse duplicate play events into listening "sessions"
+    - Data Aggregation --> Calculate daily listening session counts
+    - Merging Tables --> Join the activity data with the weekday lookup table
+    - Adding Features --> Add month, rolling average, and weekend flag columns
+    - Data Visualization --> Plot daily trends, box plots, bar charts, and the rolling average plot
+    - Hypothesis Testing --> Two-sample t-Test (weekday vs. weekend) and one-way ANOVAs (by month and by day of week)
+    - Classification --> Train and evaluate kNN and Decision Tree classifiers to predict whether a day is a weekday or weekend
 """
 
 # --- IMPORTS ---
