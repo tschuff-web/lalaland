@@ -176,6 +176,10 @@ def plot_daily_counts(df):
     plt.title("Daily Listening Sessions Over Time")
     plt.xlabel("Date")
     plt.ylabel("Listen Count")
+    plt.ylim(
+        bottom=0,
+        top=300,
+    )
     plt.xticks(rotation=45)
     plt.show()
 
@@ -187,11 +191,54 @@ def boxplot_wkday_wkend(df):
 
     weekday = df[df["Is Weekend"] == 0]["Listen Count"]
     weekend = df[df["Is Weekend"] == 1]["Listen Count"]
+
+    wkday_median = weekday.median()
+    wknd_median = weekend.median()
+
     plt.figure(figsize=(6, 5))
-    plt.boxplot([weekday, weekend], label=["Weekday", "Weekend"])
+    plt.boxplot([weekday, weekend], tick_labels=["Weekday", "Weekend"])
+    plt.annotate(
+        f"Median: {wkday_median:.0f}",
+        xy=(1, wkday_median),
+        xytext=(1.1, wkday_median),
+        fontsize=9,
+        va="center",
+    )
+    plt.annotate(
+        f"Median: {wknd_median:.0f}",
+        xy=(2, wknd_median),
+        xytext=(2.1, wknd_median),
+        fontsize=9,
+        va="center",
+    )
     plt.title("Weekday vs Weekend Listening")
     plt.xlabel("Day Type")
     plt.ylabel("Listen Count")
+    plt.ylim(bottom=0, top=300)
+    plt.show()
+
+
+def plot_listening_by_day_of_week(df):
+    """
+    Bar chart showing average listening counts for each day of the week.
+    """
+    days = [
+        "Monday",
+        "Tuesday",
+        "Wednesday",
+        "Thursday",
+        "Friday",
+        "Saturday",
+        "Sunday",
+    ]
+    day_avg = df.groupby("Day of Week")["Listen Count"].mean().reindex(days)
+
+    plt.figure(figsize=(8, 5), layout="constrained")
+    plt.bar(x=day_avg.index, height=day_avg.values)
+    plt.title("Average Listening Count by Day of the Week")
+    plt.xlabel("Day of Week")
+    plt.ylabel("Mean Listen Count (# Songs Played)")
+    plt.xticks(rotation=45)
     plt.show()
 
 
@@ -247,10 +294,29 @@ def t_test_weekday_vs_weekend(df):
     return stats.ttest_ind(weekday, weekend, equal_var=False)
 
 
+def anova_day_of_week(df):
+    """
+    One-way ANOVA comparing listening counts across the days of the week.
+    Returns the f-statistic and p-value.
+    """
+
+    days = [
+        "Monday",
+        "Tuesday",
+        "Wednesday",
+        "Thursday",
+        "Friday",
+        "Saturday",
+        "Sunday",
+    ]
+    groups = [df[df["Day of Week"] == day]["Listen Count"] for day in days]
+    return stats.f_oneway(*groups)
+
+
 def anova_monthly(df):
     """
     One-way ANOVA comparing listening counts across months.
-    Returns the f-statistic and p-value
+    Returns the f-statistic and p-value.
     """
 
     groups = [group["Listen Count"].values for _, group in df.groupby("Month")]
@@ -353,7 +419,7 @@ def convert_label(value):
         return "Weekend"
 
 
-def clf_report(model_name, y_test, y_pred, acc, title="Classification Results"):
+def clf_report(y_test, y_pred, acc, title="Classification Results"):
     print(f"{title}")
     print(f"Accuracy: {acc:.4f}\n")
 
