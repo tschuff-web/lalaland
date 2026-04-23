@@ -28,7 +28,6 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import accuracy_score
 from sklearn.metrics import (
     confusion_matrix,
-    classification_report,
     ConfusionMatrixDisplay,
 )
 from sklearn.tree import DecisionTreeClassifier, plot_tree
@@ -432,10 +431,6 @@ def clf_report(y_test, y_pred, acc, title="Classification Results"):
     cm = confusion_matrix(y_test, y_pred)
     print("Confusion Matrix:")
     print(cm, "\n")
-
-    # Classification Report
-    print("Classification Report:")
-    print(classification_report(y_test, y_pred, target_names=["Weekday", "Weekend"]))
 
     # Confusion Matrix (visual display)
     disp = ConfusionMatrixDisplay(
