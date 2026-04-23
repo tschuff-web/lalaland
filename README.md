@@ -1,4 +1,4 @@
-# _La La Land_ - Analyzing my Apple Music Listenign Behavior
+# _La La Land_ - Analyzing my Apple Music Listening Behavior
 
 ## Quantified Self Project - CPSC 222 (Spring 2026)
 
@@ -9,36 +9,42 @@
 ## Overview
 
 LaLaLand is a Quantified Self project that analyzes my daily Apple Music
-listening history over the last year(ish). The goal is to understand how my
-listening behavior changes across time, test hypotheses about weekday/weekend
-and monthly differences, and build classifiers that predict whether a given day
-is a weekday or weekend solely on listening patterns.
+listening history over the last year-ish (June 2025 to April 2026). The goal is
+to better understand how my listening behavior changes across time, test
+hypotheses about weekday/weekend and monthly differences, and build classifiers
+that predict whether a given day is a weekday or weekend based on listening
+patterns.
 
 This project includes the following:
 
 - Data cleaning and preprocessing
-- Merging multiple tables
-- Exploratory data analysis (EDA)
-- Statistical hypothesis testing
-- Machine learning classification (kNN)
+- Merging multiple tables from different data sources
+- Exploratory data analysis (EDA) with five visualizations
+- Statistical hypothesis testing (t-Test and two ANOVAS)
+- Machine learning classification (kNN and Decision Tree)
 
 ---
 
 ### Key Components
 
-- **lalaland.ipynb**  
-  The main narrative report containing the introduction, data preparation, EDA,
-  hypothesis testing, and classification results. Code cells are interleaved and
-  mostly call functions from the `new_utils.py` file.
+- `lalaland.ipynb` The main narrative report containing the introduction, data
+  preparation, EDA, hypothesis testing, and classification results. Code cells
+  are short and mostly call functions from `new_utils.py`, with surrounding
+  markdown cells describing inputs, outputs, and insights.
 
-- **new_utils.py**  
-  A utility module containing all the data loading, cleaning, aggregation,
-  visualization, hypothesis testing, and classification functions (kNN and
-  Decision Tree).
+- `new_utils.py` A utility file with all the data loading, cleaning,
+  aggregation, visualization, hypothesis testing, and classification functions
+  (kNN and Decision Tree). All project logic lives here, and the notebook calls
+  these functions directly
 
-- **dataset files/**  
-  Contains the Apple Music export, the weekday/weekend table, and a list of
-  columns to remove during cleaning.
+- `dataset files` Contains three input files
+  - `Apple Music Play Activity.csv` - raw export from Apple
+  - `weekday_table.csv` - manually created lookup table with calendar date and
+    day of week
+  - `columns_to_remove.csv` - list of irrelevant columns that are dropped during
+    cleaning
+- `output files` Contains the three output CSV files from various stages of data
+  cleaning.
 
 ---
 
@@ -54,30 +60,39 @@ This project uses Python 3.10+ and the following libraries:
 - scipy
 - scikit‑learn
 
-Importantly, remember to set your working directory to: %cd
-/path/to/quantified-self-project
+### Running the Notebook
 
-Then, within the `lalaland.ipynb` Jupyter Notebook, execute the Notebook cells
-in order with `Run All`. The notebook will then:
+Set your working directory to: %cd /path/to/quantified-self-project
 
-1. Load the Apple Music dataset
+Run all cells in order with `Run All`. The notebook will:
+
+1. Load the Apple Music dataset and weekday table
 2. Clean and preprocess the data
-3. Merge with the weekday table
-4. Perform EDA and hypothesis testing
-5. Train and evaluate the kNN classifier
+3. Merge the two tables on the `Date` column
+4. dd features (month, rolling average, weekend flag)
+5. Perform EDA and hypothesis testing
+6. Train and evaluate the kNN and Decision Tree classifiers
+
+## Dataset
 
 ### Data Sources
 
-1. Apple Music Play Activity - Exported from Apple’s privacy portal
+1. **Apple Music Play Activity** - Exported from Apple’s privacy portal
    ([https://privacy.apple.com](https://privacy.apple.com)).
    - Contains timestamped events for every play, pause, and resume action.
-2. Weekday Table
-   - Generated manually based on calendar dates. No third‑party datasets were
-     used.
+   - Raw table: **79,403** rows; cleaned to **38,843** unique listening
+     "sessions"
+2. **Weekday Table** - Generated manually in Excel from calendar dates.
+   - Maps each date to its corresponding day of the week
+   - **340** rows, one per date in the dataset.
 
-### Notes on Ethics and Privacy
+### Attributes (after cleaning and merging)
 
-- This project uses personal listening data.
-- All analysis is performed locally, and no data is shared or uploaded
-  externally.
-- The project demonstrates responsible handling of personal digital traces.
+| Attribute         | Description                           | Scale    |
+| ----------------- | ------------------------------------- | -------- |
+| `Date`            | Calendar Date                         | Interval |
+| `Listen Count`    | Unique listening sessions per day     | Ratio    |
+| `Day of Week`     | Monday through Sunday                 | Nominal  |
+| `Is Weekend`      | Class label: 0 = Weekday, 1 = Weekend | Binary   |
+| `Month`           | Numeric month (1-12)                  | Ordinal  |
+| `Rolling Average` | 7-day smoothed listening trend        | Ratio    |
