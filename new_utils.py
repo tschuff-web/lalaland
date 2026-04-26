@@ -175,7 +175,7 @@ def plot_daily_counts(df):
     """
     Plot the daily listening counts
     """
-    plt.figure(figsize=(12, 5))
+    plt.figure(dpi=300, layout="constrained")
     plt.plot(df["Date"], df["Listen Count"])
     plt.title("Daily Listening Sessions Over Time")
     plt.xlabel("Date")
@@ -199,7 +199,7 @@ def boxplot_wkday_wkend(df):
     wkday_median = weekday.median()
     wknd_median = weekend.median()
 
-    plt.figure(figsize=(6, 5))
+    plt.figure(dpi=300, layout="constrained")
     plt.boxplot([weekday, weekend], tick_labels=["Weekday", "Weekend"])
     plt.annotate(
         f"Median: {wkday_median:.0f}",
@@ -237,7 +237,7 @@ def plot_listening_by_day_of_week(df):
     ]
     day_avg = df.groupby("Day of Week")["Listen Count"].mean().reindex(days)
 
-    plt.figure(figsize=(8, 5), layout="constrained")
+    plt.figure(dpi=300, layout="constrained")
     plt.bar(x=day_avg.index, height=day_avg.values)
     plt.title("Average Listening Count by Day of the Week")
     plt.xlabel("Day of Week")
@@ -252,7 +252,8 @@ def monthly_trend(df):
     """
 
     monthly_avg = df.groupby("Month")["Listen Count"].mean()
-    plt.figure(figsize=(8, 5))
+
+    plt.figure(dpi=300, layout="constrained")
     plt.bar(monthly_avg.index, monthly_avg.values)
     plt.title("Average Listening Count by Month")
     plt.xlabel("Month")
@@ -266,7 +267,7 @@ def rolling_average_trend(df):
     Generate a line plot with the rolling average on top of the daily listening counts
     """
 
-    plt.figure(figsize=(12, 5))
+    plt.figure(dpi=300, layout="constrained")
     plt.plot(df["Date"], df["Listen Count"], alpha=0.4, label="Daily Count")
     plt.plot(
         df["Date"],
@@ -365,7 +366,7 @@ def train_knn_classifier(X, y, k=5, test_size=0.2, random_state=42):
     return knn, X_test, y_test, y_pred, acc
 
 
-def train_decision_tree(X, y, max_depth=5, test_size=0.22, random_state=42):
+def train_decision_tree(X, y, max_depth=3, test_size=0.22, random_state=42):
     """
     Train a Decision Tree classifier to predict weekday vs. weekend.
     Returns the model, X_test, y_test, y_pred, and accuracy.
@@ -397,7 +398,7 @@ def plot_decision_tree(tree_clf, feature_cols):
     Visualize the trained Decision Tree using MatPlotLib
     Shows the feature splits, entropy, and class predictions at each node.
     """
-    fig, ax = plt.subplots(layout="constrained", figsize=(14, 6))
+    fig, ax = plt.subplots(dpi=350, layout="constrained")
     plot_tree(
         tree_clf,
         feature_names=feature_cols,
@@ -436,7 +437,7 @@ def clf_report(y_test, y_pred, acc, title="Classification Results"):
     disp = ConfusionMatrixDisplay(
         confusion_matrix=cm, display_labels=["Weekday", "Weekend"]
     )
-    fig, ax = plt.subplots(layout="constrained", figsize=(5, 4))
+    fig, ax = plt.subplots(dpi=300, layout="constrained")
     disp.plot(ax=ax, colorbar=True)
     ax.set_title(f"{title} - Confusion Matrix")
     plt.show()
