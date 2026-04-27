@@ -175,17 +175,20 @@ def plot_daily_counts(df):
     """
     Plot the daily listening counts
     """
-    plt.figure(dpi=300, layout="constrained")
-    plt.plot(df["Date"], df["Listen Count"])
-    plt.title("Daily Listening Sessions Over Time")
-    plt.xlabel("Date")
-    plt.ylabel("Listen Count")
-    plt.ylim(
+    fig, ax = plt.subplots(dpi=300, layout="constrained")
+
+    ax.plot(df["Date"], df["Listen Count"])
+    ax.set_title("Daily Listening Counts Over Time")
+    ax.set_xlabel("Date")
+    ax.set_ylabel("Listen Count")
+    ax.set_ylim(
         bottom=0,
         top=300,
     )
-    plt.xticks(rotation=45)
+    fig.autofmt_xdate()
     plt.show()
+
+    return fig
 
 
 def boxplot_wkday_wkend(df):
@@ -199,27 +202,29 @@ def boxplot_wkday_wkend(df):
     wkday_median = weekday.median()
     wknd_median = weekend.median()
 
-    plt.figure(dpi=300, layout="constrained")
-    plt.boxplot([weekday, weekend], tick_labels=["Weekday", "Weekend"])
-    plt.annotate(
+    fig, ax = plt.subplots(dpi=300, layout="constrained")
+    ax.boxplot([weekday, weekend], tick_labels=["Weekday", "Weekend"])
+    ax.annotate(
         f"Median: {wkday_median:.0f}",
         xy=(1, wkday_median),
         xytext=(1.1, wkday_median),
         fontsize=9,
         va="center",
     )
-    plt.annotate(
+    ax.annotate(
         f"Median: {wknd_median:.0f}",
         xy=(2, wknd_median),
         xytext=(2.1, wknd_median),
         fontsize=9,
         va="center",
     )
-    plt.title("Weekday vs Weekend Listening")
-    plt.xlabel("Day Type")
-    plt.ylabel("Listen Count")
-    plt.ylim(bottom=0, top=300)
+    ax.set_title("Weekday vs Weekend Listening")
+    ax.set_xlabel("Day Type")
+    ax.set_ylabel("Listen Count")
+    ax.set_ylim(bottom=0, top=300)
     plt.show()
+
+    return fig
 
 
 def plot_listening_by_day_of_week(df):
@@ -237,13 +242,16 @@ def plot_listening_by_day_of_week(df):
     ]
     day_avg = df.groupby("Day of Week")["Listen Count"].mean().reindex(days)
 
-    plt.figure(dpi=300, layout="constrained")
-    plt.bar(x=day_avg.index, height=day_avg.values)
-    plt.title("Average Listening Count by Day of the Week")
-    plt.xlabel("Day of Week")
-    plt.ylabel("Mean Listen Count (# Songs Played)")
-    plt.xticks(rotation=45)
+    fig, ax = plt.subplots(dpi=300, layout="constrained")
+
+    ax.bar(x=day_avg.index, height=day_avg.values)
+    ax.set_title("Average Listening Count by Day of the Week")
+    ax.set_xlabel("Day of Week")
+    ax.set_ylabel("Mean Listen Count (# Songs Played)")
+    fig.autofmt_xdate()
     plt.show()
+
+    return fig
 
 
 def monthly_trend(df):
@@ -253,34 +261,37 @@ def monthly_trend(df):
 
     monthly_avg = df.groupby("Month")["Listen Count"].mean()
 
-    plt.figure(dpi=300, layout="constrained")
-    plt.bar(monthly_avg.index, monthly_avg.values)
-    plt.title("Average Listening Count by Month")
-    plt.xlabel("Month")
-    plt.ylabel("Mean Listen Count")
-    plt.xticks(monthly_avg.index)
+    fig, ax = plt.subplots(dpi=300, layout="constrained")
+    ax.bar(monthly_avg.index, monthly_avg.values)
+    ax.set_title("Average Listening Count by Month")
+    ax.set_xlabel("Month")
+    ax.set_ylabel("Mean Listen Count")
+    ax.set_xticks(monthly_avg.index)
     plt.show()
+
+    return fig
 
 
 def rolling_average_trend(df):
     """
     Generate a line plot with the rolling average on top of the daily listening counts
     """
-
-    plt.figure(dpi=300, layout="constrained")
-    plt.plot(df["Date"], df["Listen Count"], alpha=0.4, label="Daily Count")
-    plt.plot(
+    fig, ax = plt.subplots(dpi=300, layout="constrained")
+    ax.plot(df["Date"], df["Listen Count"], alpha=0.4, label="Daily Count")
+    ax.plot(
         df["Date"],
         df["Rolling Average"],
         color="red",
         label="7-Day Rolling Avg",
     )
-    plt.title("Daily Listening Sessions with 7-Day Rolling Average")
-    plt.xlabel("Date")
-    plt.ylabel("Listen Count")
-    plt.legend()
-    plt.xticks(rotation=45)
+    ax.set_title("Daily Listening Sessions with 7-Day Rolling Average")
+    ax.set_xlabel("Date")
+    ax.set_ylabel("Listen Count")
+    ax.legend()
+    fig.autofmt_xdate()
     plt.show()
+
+    return fig
 
 
 # --- HYPOTHESIS TESTING ---
